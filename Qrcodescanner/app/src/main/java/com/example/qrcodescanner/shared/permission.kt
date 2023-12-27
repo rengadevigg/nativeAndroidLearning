@@ -30,7 +30,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
-
+//it is for experimental screen.
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PermissionScreen(
@@ -51,9 +51,7 @@ fun PermissionScreen(
                 if(!permissionStatus.status.shouldShowRationale){
                    showAlert.value = true
                 }
-                if(permissionStatus.status.shouldShowRationale){
-                    navController.navigate(Screen.Home.route)
-                }
+
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

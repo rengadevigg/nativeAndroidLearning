@@ -1,7 +1,9 @@
 package com.example.qrcodescanner.shared
 
 
+import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -12,6 +14,7 @@ import com.google.mlkit.vision.common.InputImage
 import java.util.regex.Pattern
 
 class BarcodeAnalyser(
+    val context: Context,
     val callback: (barcode: String) -> Unit
 ) : ImageAnalysis.Analyzer {
     @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
@@ -32,11 +35,22 @@ class BarcodeAnalyser(
                         val barcodeValue = barcode.rawValue
                         if (barcodeValue != null) {
                             val parsedLink = parseLinkFromContent(barcodeValue)
-                            callback(parsedLink.toString())
+                            callback(parsedLink)
                         }
                     }
+                    Log.d("success", "sucess")
                 }
+
                 .addOnFailureListener {
+                    Log.d("success", "failure")
+                    Toast.makeText(context, "something went wrong", Toast.LENGTH_SHORT)
+                }
+                .addOnCanceledListener {
+                    Log.d("success", "canceled")
+                }
+                .addOnCompleteListener {
+                    Log.d("success", "complete")
+                    Toast.makeText(context, "something went wrong", Toast.LENGTH_SHORT)
                 }
         }
         imageProxy.close()

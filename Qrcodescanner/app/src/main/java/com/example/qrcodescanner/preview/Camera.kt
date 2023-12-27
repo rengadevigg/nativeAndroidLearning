@@ -12,6 +12,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,73 +30,95 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavHostController
 import com.example.qrcodescanner.R
+import com.example.qrcodescanner.Screen
 import com.example.qrcodescanner.shared.BarcodeAnalyser
 import java.util.concurrent.Executors
 
 @androidx.camera.core.ExperimentalGetImage
 @Composable()
-fun PreviewViewComposable() {
+fun PreviewViewComposable(
+    navController: NavHostController, onBardCodeScanner: (String) -> Unit
+) {
     val scannedBarcode = remember { mutableStateOf<String?>(null) }
-
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier.fillMaxSize()
     ) {
-        AndroidView({ context ->
-            val cameraExecutor = Executors.newSingleThreadExecutor()
-            val previewView = PreviewView(context).also {
-                it.scaleType = PreviewView.ScaleType.FILL_CENTER
-            }
-            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-            cameraProviderFuture.addListener({
-                val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
-                val preview = Preview.Builder()
-                    .build()
-                    .also {
-                        it.setSurfaceProvider(previewView.surfaceProvider)
-                    }
-
-                val imageCapture = ImageCapture.Builder().build()
-
-                val imageAnalyzer = ImageAnalysis.Builder()
-                    .build()
-                    .also {
-                        it.setAnalyzer(cameraExecutor, BarcodeAnalyser{
-                            scannedBarcode.value = it
-                            Toast.makeText(context, scannedBarcode.value, Toast.LENGTH_SHORT).show()
-                        })
-                    }
-
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-                try {
-                    // Unbind use cases before rebinding
-                    cameraProvider.unbindAll()
-
-                    // Bind use cases to camera
-                    cameraProvider.bindToLifecycle(
-                        context as ComponentActivity, cameraSelector, preview, imageCapture, imageAnalyzer)
-
-                } catch(exc: Exception) {
-                    Log.e("DEBUG", "Use case binding failed", exc)
-                }
-            }, ContextCompat.getMainExecutor(context))
-            previewView
-        },
+        Icon(painter = painterResource(id = R.drawable.white_qrcode), contentDescription = "qr code" ,
             modifier = Modifier
-                .padding(30.dp)
-                .fillMaxWidth()
-                .height(500.dp)
-                )
+                .width(400.dp).height(100.dp)
+                .padding(top = 40.dp)
+        )
     }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Row (
+            modifier = Modifier.padding(60.dp)
 
+        ){
+
+            AndroidView(
+                { context ->
+                    val cameraExecutor = Executors.newSingleThreadExecutor()
+                    val previewView = PreviewView(context).also {
+                        it.scaleType = PreviewView.ScaleType.FILL_CENTER
+                    }
+                    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+                    cameraProviderFuture.addListener({
+                        val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+                        val preview = Preview.Builder()
+                            .build()
+                            .also {
+                                it.setSurfaceProvider(previewView.surfaceProvider)
+                            }
+
+                        val imageCapture = ImageCapture.Builder().build()
+
+                        val imageAnalyzer = ImageAnalysis.Builder()
+                            .build()
+                            .also {
+                                it.setAnalyzer(cameraExecutor, BarcodeAnalyser(context = context){
+                                    scannedBarcode.value = it
+                                    onBardCodeScanner(scannedBarcode.value
+                                    !!)
+                                    navController.navigate(Screen.ScannedInfo.route)
+                                })
+                            }
+
+                        val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+                        try {
+                            // Unbind use cases before rebinding
+                            cameraProvider.unbindAll()
+
+                            // Bind use cases to camera
+                            cameraProvider.bindToLifecycle(
+                                context as ComponentActivity, cameraSelector, preview, imageCapture, imageAnalyzer)
+
+                        } catch(exc: Exception) {
+                            Log.e("DEBUG", "Use case binding failed", exc)
+                        }
+                    }, ContextCompat.getMainExecutor(context))
+                    previewView
+                },
+
+                modifier = Modifier
+                    .width(550.dp)
+                    .height(550.dp)
+                    .padding(top = 80.dp, bottom = 80.dp)
+            ) {
+
+            }
+        }
+    }
 }
-
 
