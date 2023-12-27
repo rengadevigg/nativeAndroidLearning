@@ -44,9 +44,10 @@ import java.util.concurrent.Executors
 @androidx.camera.core.ExperimentalGetImage
 @Composable()
 fun PreviewViewComposable(
-    navController: NavHostController, onBardCodeScanner: (String) -> Unit
+    navController: NavHostController, onBardCodeScanner: (Any) -> Unit
 ) {
     val scannedBarcode = remember { mutableStateOf<String?>(null) }
+    var scannedBarcodeList = remember { mutableListOf<String>("") }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -85,11 +86,22 @@ fun PreviewViewComposable(
 
                         val imageAnalyzer = ImageAnalysis.Builder()
                             .build()
-                            .also {
+                            .also { it ->
                                 it.setAnalyzer(cameraExecutor, BarcodeAnalyser(context = context){
-                                    scannedBarcode.value = it
-                                    onBardCodeScanner(scannedBarcode.value
-                                    !!)
+                                    scannedBarcodeList.add(it)
+                                    onBardCodeScanner(scannedBarcodeList)
+//                                    if(it.length === 1){
+//                                        scannedBarcodeList.value = it
+//                                        scannedBarcode.value = it
+//                                        onBardCodeScanner(scannedBarcode.value
+//                                        !!)
+//                                    }
+//                                    if(it.length > 1){
+//                                        scannedBarcodeList.add = listOf(it)
+//                                        onBardCodeScanner(scannedBarcodeList.value
+//                                        )
+//                                    }
+
                                     navController.navigate(Screen.ScannedInfo.route)
                                 })
                             }
