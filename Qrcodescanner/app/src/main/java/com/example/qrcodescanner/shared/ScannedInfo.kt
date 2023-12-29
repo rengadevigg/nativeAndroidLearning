@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ScannedInfo(string: MutableList<String?>){
+fun ScannedInfo(string: MutableList<String>){
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -27,9 +27,7 @@ fun ScannedInfo(string: MutableList<String?>){
             contentPadding = PaddingValues(16.dp)
         ) {
             items(string) { item ->
-                if (item != null) {
-                    Text(text = item)
-                }
+                Text(text = item)
             }
         }
     }

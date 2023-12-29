@@ -13,7 +13,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 @Composable
 @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
 fun  AppNavGraph(navController: NavHostController){
-    val scannedBarcode = remember { mutableListOf<String?>("hello","hello1") }
+    val scannedBarcode = remember { mutableListOf<String>("hello","hello1") }
     NavHost(navController = navController, startDestination = Screen.Home.route){
         composable(Screen.Home.route){
             Home(navController = navController)

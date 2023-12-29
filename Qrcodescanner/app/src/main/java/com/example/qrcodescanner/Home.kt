@@ -13,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,10 +22,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.qrcodescanner.shared.ShowText
 import com.example.qrcodescanner.ui.theme.CookeryColor
 import com.example.qrcodescanner.ui.theme.LightCookeryColor
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 
 @Composable
 fun Home(navController: NavHostController) {
@@ -33,7 +38,8 @@ fun Home(navController: NavHostController) {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun OpenScanner(navController: NavHostController){
-
+val permissionState = rememberPermissionState(permission = android.Manifest.permission.CAMERA)
+    val showAlert = remember { mutableStateOf(false) }
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -52,7 +58,17 @@ fun OpenScanner(navController: NavHostController){
         ) {
             TextButton(
                 onClick =
-                {navController.navigate(Screen.Camera.route) },
+                {  if (!permissionState.status.isGranted) {
+                    if (!permissionState.status.shouldShowRationale) {
+                        permissionState.launchPermissionRequest()
+                    }
+                    else if(permissionState.status.shouldShowRationale){
+                        showAlert.value = true
+                    }
+                }else if (permissionState.status.isGranted){
+                    navController.navigate(Screen.Camera.route)
+                }
+                },
                 modifier = Modifier
                     .background(color = LightCookeryColor)
                     .width(250.dp)
@@ -64,6 +80,12 @@ fun OpenScanner(navController: NavHostController){
             }
         }
 
+    }
+    if (showAlert.value){
+        ShowText(info = "hello", showDialog = true
+        ) {
+            navController.navigate(Screen.Home.route)
+        }
     }
 }
 

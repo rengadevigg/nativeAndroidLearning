@@ -39,6 +39,7 @@ import androidx.navigation.NavHostController
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.Screen
 import com.example.qrcodescanner.shared.BarcodeAnalyser
+import com.example.qrcodescanner.shared.ScannedInfo
 import java.util.concurrent.Executors
 
 @androidx.camera.core.ExperimentalGetImage
@@ -46,17 +47,8 @@ import java.util.concurrent.Executors
 fun PreviewViewComposable(
     navController: NavHostController, onBardCodeScanner: (Any) -> Unit
 ) {
-    val scannedBarcode = remember { mutableStateOf<String?>(null) }
     var scannedBarcodeList = remember { mutableListOf<String>("") }
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Icon(painter = painterResource(id = R.drawable.white_qrcode), contentDescription = "qr code" ,
-            modifier = Modifier
-                .width(400.dp).height(100.dp)
-                .padding(top = 40.dp)
-        )
-    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -90,18 +82,6 @@ fun PreviewViewComposable(
                                 it.setAnalyzer(cameraExecutor, BarcodeAnalyser(context = context){
                                     scannedBarcodeList.add(it)
                                     onBardCodeScanner(scannedBarcodeList)
-//                                    if(it.length === 1){
-//                                        scannedBarcodeList.value = it
-//                                        scannedBarcode.value = it
-//                                        onBardCodeScanner(scannedBarcode.value
-//                                        !!)
-//                                    }
-//                                    if(it.length > 1){
-//                                        scannedBarcodeList.add = listOf(it)
-//                                        onBardCodeScanner(scannedBarcodeList.value
-//                                        )
-//                                    }
-
                                     navController.navigate(Screen.ScannedInfo.route)
                                 })
                             }
@@ -131,6 +111,10 @@ fun PreviewViewComposable(
 
             }
         }
+    }
+
+    Column {
+        ScannedInfo(string = scannedBarcodeList)
     }
 }
 
