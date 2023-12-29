@@ -1,42 +1,28 @@
 package com.example.qrcodescanner.preview
 
-import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
-import com.example.qrcodescanner.R
 import com.example.qrcodescanner.Screen
 import com.example.qrcodescanner.shared.BarcodeAnalyser
 import com.example.qrcodescanner.shared.ScannedInfo
@@ -47,8 +33,8 @@ import java.util.concurrent.Executors
 fun PreviewViewComposable(
     navController: NavHostController, onBardCodeScanner: (Any) -> Unit
 ) {
-    var scannedBarcodeList = remember { mutableListOf<String>("") }
-
+    val viewModel = CameraViewModel()
+    val scannedList by viewModel.scannedBarcodeList.collectAsState()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -80,8 +66,8 @@ fun PreviewViewComposable(
                             .build()
                             .also { it ->
                                 it.setAnalyzer(cameraExecutor, BarcodeAnalyser(context = context){
-                                    scannedBarcodeList.add(it)
-                                    onBardCodeScanner(scannedBarcodeList)
+                                    viewModel._scannedBarcodeList.value = listOf(it)
+                                    onBardCodeScanner(scannedList)
                                     navController.navigate(Screen.ScannedInfo.route)
                                 })
                             }
@@ -114,7 +100,9 @@ fun PreviewViewComposable(
     }
 
     Column {
-        ScannedInfo(string = scannedBarcodeList)
+        if(scannedList.isNotEmpty()){
+            ScannedInfo(list = scannedList)
+        }
     }
 }
 
