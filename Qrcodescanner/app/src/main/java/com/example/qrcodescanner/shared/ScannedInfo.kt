@@ -14,22 +14,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ScannedInfo(list: List<String>){
+fun ScannedInfo(list: MutableList<String>){
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         //to show a last scanned value.
-        Text(text = list[list.lastIndex] )
+        Text(text = list[list.lastIndex])
         // to show a list of scanned value.
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(list) { item ->
-                Text(text = item)
-            }
-        }
+//        LazyColumn(
+//            modifier = Modifier.fillMaxWidth(),
+//            contentPadding = PaddingValues(16.dp)
+//        ) {
+//            items(list) { item ->
+//                Text(text = item)
+//            }
+//        }
     }
 }

@@ -1,12 +1,10 @@
 package com.example.qrcodescanner
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.qrcodescanner.preview.CameraViewModel
 import com.example.qrcodescanner.preview.PreviewViewComposable
 import com.example.qrcodescanner.shared.ScannedInfo
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -15,19 +13,20 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 @Composable
 @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
 fun  AppNavGraph(navController: NavHostController){
-    val viewModel = CameraViewModel()
-    val scannedList by viewModel.scannedBarcodeList.collectAsState()
+//    val viewModel = CameraViewModel()
+//    val scannedList by viewModel.scannedBarcodeList.collectAsState()
+    val scannedBarcode = remember { mutableListOf<String>("hello","hello1") }
     NavHost(navController = navController, startDestination = Screen.Home.route){
         composable(Screen.Home.route){
             Home(navController = navController)
         }
         composable(Screen.Camera.route){
             PreviewViewComposable(navController , onBardCodeScanner = {
-                    barcode -> viewModel._scannedBarcodeList.value = listOf(barcode.toString())
+                    barcode -> scannedBarcode.add(barcode.toString())
             })
         }
         composable(Screen.ScannedInfo.route){
-            ScannedInfo(scannedList)
+            ScannedInfo(scannedBarcode)
         }
     }
 }
