@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.qrcodescanner.preview.CameraViewModel
+import com.example.qrcodescanner.preview.PreviewViewComposable
 import com.example.qrcodescanner.shared.ShowText
 import com.example.qrcodescanner.ui.theme.CookeryColor
 import com.example.qrcodescanner.ui.theme.LightCookeryColor
@@ -58,7 +60,9 @@ val permissionState = rememberPermissionState(permission = android.Manifest.perm
         ) {
             TextButton(
                 onClick =
-                {  if (!permissionState.status.isGranted) {
+                {
+
+                    if (!permissionState.status.isGranted) {
                     if (!permissionState.status.shouldShowRationale) {
                         permissionState.launchPermissionRequest()
                     }
