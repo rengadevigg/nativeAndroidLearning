@@ -67,11 +67,14 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     //permission
     implementation ("com.google.accompanist:accompanist-permissions:0.25.0");
     //navigation
-    implementation ("androidx.navigation:navigation-compose:2.4.0-alpha08")
+    implementation ("androidx.navigation:navigation-compose:2.7.6")
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
 
     //camera and Mlkitvision
     val camerax_version = "1.3.0-alpha04";

@@ -1,17 +1,25 @@
 package com.example.qrcodescanner.shared
 
-
+import java.net.URL
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import android.provider.ContactsContract.CommonDataKinds.Website.URL
 import android.util.Log
+import android.util.Patterns
+import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import java.net.HttpURLConnection
+import java.net.URISyntaxException
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -31,7 +39,6 @@ class BarCodeAnalyser(
                 val barcodeScanner = BarcodeScanning.getClient(options)
                 val imageToProcess =
                     InputImage.fromMediaImage(imageToAnalyze, image.imageInfo.rotationDegrees)
-
                 barcodeScanner.process(imageToProcess)
                     .addOnSuccessListener { barcodes ->
                         if (barcodes.isNotEmpty()) {
@@ -56,16 +63,26 @@ class BarCodeAnalyser(
 
 
 
-fun parseLinkFromContent(scannedResult: String): String {
-    val urlPattern = Pattern.compile(
-        "\\bhttps?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
-    )
+fun parseLinkFromContent(scannedResult: MutableList<Barcode>): MutableList<String> {
+    Log.d("list00001",scannedResult.toString())
+    val urlPattern = ("((http|https)://)(www.)?" +
+     "[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]" +
+    "{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)").toPattern()
 
-    val matcher = urlPattern.matcher(scannedResult)
-    while (matcher.find()){
-        val url = matcher.group()
-        return url;
+    var urlList: MutableList<String>   = mutableListOf();
+scannedResult.forEach {
+    value ->
+    val matcher = value.rawValue?.let { urlPattern.matcher(it) }
+    Log.d("list00002",matcher.toString())
+    if (matcher != null) {
+        while (matcher.find()){
+             var url = matcher.group()
+            Log.d("list00003",url.toString())
+            urlList.add(url)
+        }
     }
-    return "no url found";
+    return urlList
+}
+    return mutableListOf("emptylist");
 
 }
